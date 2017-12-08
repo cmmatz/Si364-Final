@@ -1,0 +1,15 @@
+<h1>{{data["feed"]["title"]}}</h1>
+
+<form method="POST">
+<button type="submit">Add to My List</button>
+</form>
+
+<ol>
+{% for epi in data["entries"] %}
+<li>
+<p> <a href="{{epi['links'][0]['href']}}"><b>{{epi["title"]}}</b></a>  <em>{{epi["published"]}}</em></p>
+<p>{{epi["summary"]}}
+
+</li>
+{% endfor %}
+</ol>

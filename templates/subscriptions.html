@@ -1,0 +1,20 @@
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+function load_all_subscriptions() {
+	$.ajax({
+ 	 url: "/subscriptions_data",
+ 	 dataType: "json"
+}).done(function( json ) {
+    for (var i = json.subscriptions.length - 1; i >= 0; i--) {
+    	$( ".subscriptions" ).append( "<p>"+ json.subscriptions[i] + "</p>")
+    };
+  });
+}
+</script>
+
+
+<h1>Your Subscriptions:</h1>
+
+<button onclick="load_all_subscriptions()">Show my Subscriptions with AJAX</button>
+<p class="subscriptions"></p>

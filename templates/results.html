@@ -1,0 +1,6 @@
+<h1>Results for your search of: {{search}}</h1>
+
+{% for cast in data %}
+<img width="200" src="{{cast['artworkUrl600']}}"/>
+<h3><a href="/podcast/{{cast['trackName']}}">{{cast['trackName']}}</a> by {{cast['artistName']}}</h3>
+{% endfor %}

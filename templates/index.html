@@ -1,0 +1,10 @@
+<h1>Search for new podcasts</h1>
+
+<form method="POST" action="/results ">
+	{{ form.hidden_tag() }}
+	{{ form.text.label }} {{ form.text() }}
+	{{ form.send_email.label }} {{ form.send_email() }}
+	{{ form.submit() }}
+</form>
+
+<a href="/subscriptions"><h3>Your Subscriptions</h3></a>
