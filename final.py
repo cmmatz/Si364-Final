@@ -1,5 +1,4 @@
 ## SI 364
-## HW5
 
 ## Import statements
 import os
@@ -33,26 +32,19 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
 app.debug = True
 app.config['SECRET_KEY'] = 'hardtoguessstringfromsi364(thisisnotsupersecure)'
-## Create a database in postgresql in the code line below, and fill in your app's database URI. It should be of the format: postgresql://localhost/YOUR_DATABASE_NAME
 
-## TODO: Create database and change the SQLAlchemy Database URI.
-## Your Postgres database should be your uniqname, plus HW5, e.g. "jczettaHW5" or "maupandeHW5"
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://localhost/cmmatz_final"
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
-app.config['MAIL_PORT'] = 587 #default
+app.config['MAIL_PORT'] = 587 
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'carlymatz5@gmail.com' # TODO export to your environs -- may want a new account just for this. It's expecting gmail, not umich
-app.config['MAIL_PASSWORD'] = 'rosswinter'
+app.config['MAIL_USERNAME'] = 'carlymatz5@gmail.com' 
 app.config['MAIL_SUBJECT_PREFIX'] = '[New Podcast Results]'
-app.config['MAIL_SENDER'] = 'Admin <carlymatz5@gmail.com>' # TODO fill in email
+app.config['MAIL_SENDER'] = 'Admin <carlymatz5@gmail.com>' 
 app.config['ADMIN'] = 'carlymatz5@gmail.com'
 
-# TODO: Add configuration specifications so that email can be sent from this application, like the examples you saw in the textbook and in class. Make sure you've installed the correct library with pip! See textbook.
-# NOTE: Make sure that you DO NOT write your actual email password in text!!!!
-# NOTE: You will need to use a gmail account to follow the examples in the textbook, and you can create one of those for free, if you want. In THIS application, you should use the username and password from the environment variables, as directed in the textbook. So when WE run your app, we will be using OUR email, not yours.
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'login'
@@ -63,12 +55,9 @@ db = SQLAlchemy(app) # For database use
 migrate = Migrate(app, db) # For database use/updating
 manager.add_command('db', MigrateCommand) # Add migrate command to manager
 mail = Mail(app) # For email sending
-# TODO: Run commands to create your migrations folder and get ready to create a first migration, as shown in the textbook and in class.
 
-## Set up Shell context so it's easy to use the shell to debug
 def make_shell_context():
     return dict(app=app, db=db, Tweet=Tweet, User=User, Hashtag=Hashtag)
-# Add function use to manager
 manager.add_command("shell", Shell(make_context=make_shell_context))
 
 
@@ -76,29 +65,22 @@ def send_async_email(app, msg):
     with app.app_context():
         mail.send(msg)
 
-def send_email(to, subject, template, **kwargs): # kwargs = 'keyword arguments', this syntax means to unpack any keyword arguments into the function in the invocation...
+def send_email(to, subject, template, **kwargs): 
     msg = Message(app.config['MAIL_SUBJECT_PREFIX'] + ' ' + subject, sender=app.config['MAIL_SENDER'], recipients=[to])
     with app.app_context():
         msg.body = render_template(template + '.txt', **kwargs)
         msg.html = render_template(template + '.html', **kwargs)
-        thr = Thread(target=send_async_email, args=[app, msg]) # using the async email to make sure the email sending doesn't take up all the "app energy" -- the main thread -- at once
+        thr = Thread(target=send_async_email, args=[app, msg]) 
         thr.start()
-        return thr # The thread being returned
-    # However, if your app sends a LOT of email, it'll be better to set up some additional "queuing" software libraries to handle it. But we don't need to do that yet. Not quite enough users!
+        return thr
 
- 
-#########
-######### Everything above this line is important/useful setup, not problem-solving.
-#########
-#########
+
 
 ##### Set up Models #####
 
-# Association table - Tweets and Hashtags
 user_subscription = db.Table('user_subscription', db.Column('listener_id', db.Integer, db.ForeignKey('listeners.listener_id')), db.Column('podcast_id', db.Integer, db.ForeignKey('podcasts.podcast_id')))
 
 # User model
-
 class User(UserMixin, db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
@@ -131,11 +113,11 @@ class RegistrationForm(FlaskForm):
         if User.query.filter_by(email=field.data).first():
             raise ValidationError('Email already registered.')
 
-# Hashtag model
+# Podcast model
 class Podcast(db.Model):
     __tablename__ = 'podcasts'
     podcast_id = db.Column(db.Integer, primary_key=True) ## -- id (Primary Key)
-    title = db.Column(db.String, unique=True) ## -- text (Unique=True) #represents a single hashtag (like UMSI)
+    title = db.Column(db.String, unique=True) 
     podcast_maker = db.Column(db.String)
     podcast_art = db.Column(db.String)
     link = db.Column(db.String)
@@ -143,7 +125,7 @@ class Podcast(db.Model):
 class Episode(db.Model):
     __tablename__ = 'episodes'
     episode_id = db.Column(db.Integer, primary_key=True) ## -- id (Primary Key)
-    title = db.Column(db.String, unique=True) ## -- text (Unique=True) #represents a single hashtag (like UMSI)
+    title = db.Column(db.String, unique=True) 
     podcast_id = db.Column(db.Integer, db.ForeignKey('podcasts.podcast_id'))
     link = db.Column(db.String)
     published = db.Column(db.String)
@@ -158,8 +140,6 @@ class PodSubscription(db.Model):
 
 ##### Set up Forms #####
 
-# TODO: Add a field in the form for a user to enter their email (the email that goes with the twitter username entered).
-# TODO: Edit the template that renders the form so that email is also asked for!
 class PodcastSearch(FlaskForm):
     text = StringField("Search by producer/title/content", validators=[Required()])
     send_email = BooleanField("Email me matching podcast names.")
@@ -215,9 +195,6 @@ def internal_server_error(e):
     return render_template('500.html'), 500
 
 
-# TODO: Edit the index route so that, when a tweet is saved by a certain user, that user gets an email. Use the send_email function (just like the one in the textbook) that you defined above.
-# NOTE: You may want to create a test gmail account to try this out so testing it out is not annoying. You can also use other ways of making test emails easy to deal with, as discussed in class!
-## This is also very similar to example code.
 @app.route('/login',methods=["GET","POST"])
 def login():
     form = LoginForm()
@@ -286,5 +263,5 @@ def subs_api():
 
 if __name__ == '__main__':
     db.create_all()
-    manager.run() # Run with this: python main_app.py runserver
+    manager.run() # Run with this: python final.py runserver
     # Also provides more tools for debugging
