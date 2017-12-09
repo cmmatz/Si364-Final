@@ -56,11 +56,6 @@ migrate = Migrate(app, db) # For database use/updating
 manager.add_command('db', MigrateCommand) # Add migrate command to manager
 mail = Mail(app) # For email sending
 
-def make_shell_context():
-    return dict(app=app, db=db, Tweet=Tweet, User=User, Hashtag=Hashtag)
-manager.add_command("shell", Shell(make_context=make_shell_context))
-
-
 def send_async_email(app, msg):
     with app.app_context():
         mail.send(msg)
