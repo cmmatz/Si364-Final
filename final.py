@@ -40,7 +40,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
 app.config['MAIL_PORT'] = 587 
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'carlymatz5@gmail.com' 
+app.config['MAIL_USERNAME'] = 'carlymatz5@gmail.com'
+app.config['MAIL_PASSWORD'] = 'rosswinter' 
 app.config['MAIL_SUBJECT_PREFIX'] = '[New Podcast Results]'
 app.config['MAIL_SENDER'] = 'Admin <carlymatz5@gmail.com>' 
 app.config['ADMIN'] = 'carlymatz5@gmail.com'
@@ -73,7 +74,7 @@ def send_email(to, subject, template, **kwargs):
 
 ##### Set up Models #####
 
-user_subscription = db.Table('user_subscription', db.Column('listener_id', db.Integer, db.ForeignKey('listeners.listener_id')), db.Column('podcast_id', db.Integer, db.ForeignKey('podcasts.podcast_id')))
+#user_subscription = db.Table('user_subscription', db.Column('listener_id', db.Integer, db.ForeignKey('listeners.listener_id')), db.Column('podcast_id', db.Integer, db.ForeignKey('podcasts.podcast_id')))
 
 # User model
 class User(UserMixin, db.Model):
